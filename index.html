@@ -87,13 +87,12 @@ var CRIT_HELP={
   'Overall Presentation':'Does it look as good as it tastes?',
   'Bonus Point':'One point will be awarded for contestants who incorporate Mid-Autumn elements (lanterns, jade rabbits, and moon motifs) in their dish.'
 };
-var MAX=5, KEY='cookoff-v8';
+var MAX=5, KEY='cookoff-r3-v3';
 // Google Apps Script web app URL to send scores to your Google Sheet.
 var SUBMIT_URL='https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
-// Custom dish numbers: 1, 5, 7, 9, 10
-var DISH_IDS=[1, 5, 7, 9, 10];
-// Optional names mapping by dish ID, e.g. {1: 'Spicy Noodle', 5: 'Sesame Noodle'}
+// Dishes 1 to 5 for Round 3
+var DISH_IDS=[1, 2, 3, 4, 5];
 var DISH_NAME_MAP={};
 
 var S=load(), cur=null, draft=null, armed={}, sending=false;
