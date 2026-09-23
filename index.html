@@ -3,221 +3,270 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cook-off judge scorecard - Round 3</title>
+<title>Cook-off judge ranking - Round 3</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f3f5f1;--card:#fff;--ink:#16302b;--mut:#5d716c;--line:#d5ddd8;--acc:#e0930c;--accInk:#1d1400;--ok:#2b7a57;--okBg:#dff1e7;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034}}
 :root[data-theme="dark"]{--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,-apple-system,'Segoe UI',sans-serif;line-height:1.45}
-main{max-width:720px;margin:0 auto;padding:20px 16px 48px}
-h1{font-size:1.9rem;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
-h2{font-size:1.1rem;margin:28px 0 10px}
-.sub{color:var(--mut);margin:0 0 16px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;line-height:1.45}
+main{max-width:600px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.85rem;font-weight:800;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--mut);margin:0 0 16px;font-size:.95rem}
 label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
-input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
-input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
-button{font:inherit;cursor:pointer;color:var(--ink)}
-.prog{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;margin:16px 0}
-.prog b{font-size:1.5rem}
-.bar{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}
-.bar i{display:block;height:100%;background:var(--ok);transition:width .3s}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
-.dish{min-height:92px;text-align:left;padding:12px;border-radius:12px;border:2px dashed var(--line);background:var(--card);display:flex;flex-direction:column;justify-content:space-between}
-.dish .n{font-weight:800;font-size:1.25rem}
-.dish .nm{font-size:.85rem;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.dish .st{font-size:.85rem;font-weight:600;color:var(--mut)}
-.dish.done{border:2px solid var(--ok);background:var(--okBg)}
-.dish.done .st{color:var(--ok)}
-.dish.add{align-items:center;justify-content:center;font-weight:600;color:var(--mut)}
-.btn{border:0;background:var(--acc);color:var(--accInk);font-weight:700;border-radius:10px;padding:12px 18px}
+input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:16px}
+input:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+button{font:inherit;cursor:pointer}
+.form-row{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+@media (max-width:480px){.form-row{grid-template-columns:1fr}}
+.list{display:flex;flex-direction:column;gap:12px;margin:16px 0 24px}
+.item{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s,background .2s}
+.item.ranked{border-color:var(--ok);background:var(--okBg)}
+.dish-info .dish-title{font-weight:800;font-size:1.25rem}
+.dish-info .dish-name{font-size:.9rem;color:var(--mut)}
+.rank-badge{min-width:110px;height:46px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.item.ranked .rank-badge{background:var(--acc);border-color:var(--acc);color:var(--accInk);font-size:1.15rem;font-weight:800}
+.btn{width:100%;border:0;background:var(--acc);color:var(--accInk);font-weight:800;border-radius:12px;padding:15px;font-size:1.1rem}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.ghost{background:none;border:1.5px solid var(--line);border-radius:10px;padding:8px 14px;color:var(--mut)}
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.crit{margin:18px 0}
-.crit>div{font-weight:600;margin-bottom:6px}
-.scale{display:flex;gap:6px}
-.scale button{flex:1;max-width:64px;font-size:2.1rem;line-height:1;padding:6px 0;border:0;background:none;color:var(--mut);border-radius:8px}
-.scale button.on{color:var(--acc)}
-.yn{display:flex;gap:8px}
-.yn button{flex:1;padding:12px 8px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;font-weight:600}
-.yn button.on{background:var(--acc);border-color:var(--acc);color:var(--accInk)}
-.total{font-size:1.4rem;font-weight:800}
-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
-th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:.92rem}
-th{color:var(--mut);font-weight:600}
-.scroll{overflow-x:auto}
+.status{margin-top:14px;text-align:center;font-size:.92rem;color:var(--mut)}
 .hide{display:none}
+
+/* Locked Confirmation View */
+.thanks-card{background:var(--card);border:2px solid var(--ok);border-radius:20px;padding:36px 20px;text-align:center;margin-top:20px}
+.icon{font-size:3.5rem;line-height:1;margin-bottom:12px}
+.summary-box{background:var(--bg);border-radius:12px;padding:14px;margin:20px 0;text-align:left}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.summary-row:last-child{border-bottom:0}
 </style>
 </head>
 <body>
 <main>
-<section id="home">
-  <h1>Cook-off scorecard - Round 3</h1>
-  <p class="sub">Tap any dish to rate it, in any order. You can change a score later.</p>
-  <label for="judge">Judge name</label>
-  <input id="judge" placeholder="Your name" autocomplete="name">
-  <div class="prog"><div class="row"><span><b id="cnt">0</b> of <span id="tot">0</span> dishes rated</span><span id="left" class="sub" style="margin:0"></span></div><div class="bar"><i id="fill" style="width:0"></i></div><p id="sync" class="sub" style="margin:10px 0 0;font-size:.9rem"></p></div>
-  <div class="grid" id="grid"></div>
-  <div id="results"></div>
-  <p style="margin-top:32px"><button class="ghost" id="reset">Clear all my scores</button></p>
-</section>
+  <!-- Voting Section -->
+  <section id="vote-view">
+    <h1>Round 3: Final ranking</h1>
+    <p class="sub">Tap each dish button in your preferred order. First tap is <b>Rank #1 (Best)</b>, next is #2, etc. Tap any ranked dish again to remove or adjust it.</p>
 
-<section id="rate" class="hide">
-  <button class="ghost" id="back">Back to all dishes</button>
-  <h1 id="rtitle" style="margin-top:16px"></h1>
-  <div id="crits"></div>
-  <label for="note">Notes</label>
-  <textarea id="note" rows="3" placeholder="Anything you want to remember"></textarea>
-  <div class="row" style="margin-top:18px"><span class="total" id="rtotal"></span><button class="btn" id="save">Save score</button></div>
-</section>
+    <div class="form-row">
+      <div>
+        <label for="judge">Your name</label>
+        <input id="judge" placeholder="Your name" autocomplete="name">
+      </div>
+      <div>
+        <label for="token">4-digit token</label>
+        <input id="token" type="tel" maxlength="4" placeholder="e.g. 1029" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="list" id="list"></div>
+
+    <button class="btn" id="submit" disabled>Submit final rankings</button>
+    <p id="status" class="status"></p>
+  </section>
+
+  <!-- Locked Thanks Screen -->
+  <section id="thanks-view" class="hide">
+    <div class="thanks-card">
+      <div class="icon">&#10004;&#65039;</div>
+      <h1 style="font-size:2.2rem;margin-bottom:4px">Thanks!</h1>
+      <p class="sub" style="font-size:1.05rem">Your vote has been submitted and verified.</p>
+      <p style="font-weight:700" id="thanks-judge"></p>
+      <div class="summary-box" id="thanks-summary"></div>
+      <p class="sub" style="font-size:.85rem;margin-top:24px">Only 1 ballot per token. Enjoy the rest of the cook-off!</p>
+    </div>
+  </section>
 </main>
+
 <script>
-// Edit this list to change what judges score, and the top of the scale.
-var CRITERIA=['Texture','Taste','Overall Presentation','Bonus Point'];
-// Categories listed here are scored 0 or 1 (No / Yes) instead of 1 to 5 stars.
-var YESNO={'Bonus Point':true};
-// Optional one-line guidance shown under a category. Add one entry per category name.
-var CRIT_HELP={
-  'Texture':'Is the noodle component doing what it was born to do?',
-  'Taste':'Does it actually taste amazing? This may be the most important question of all.',
-  'Overall Presentation':'Does it look as good as it tastes?',
-  'Bonus Point':'One point will be awarded for contestants who incorporate Mid-Autumn elements (lanterns, jade rabbits, and moon motifs) in their dish.'
-};
-var MAX=5, KEY='cookoff-r3-v3';
-// Google Apps Script web app URL to send scores to your Google Sheet.
-var SUBMIT_URL='https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
+var KEY = 'cookoff-r3-token-v1';
+var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
-// Dishes 1 to 5 for Round 3
-var DISH_IDS=[1, 2, 3, 4, 5];
-var DISH_NAME_MAP={};
+var DISH_IDS = [1, 2, 3, 4, 5];
+var DISH_NAMES = {};
 
-var S=load(), cur=null, draft=null, armed={}, sending=false;
-S.pending=S.pending||{};
-if(!S.jid)S.jid=Math.random().toString(36).slice(2,10);
-S.dishes=DISH_IDS.map(function(num){
-  return {id: num, name: DISH_NAME_MAP[num] || ''};
-});
+var S = load(), sending = false;
+if (!S.jid) S.jid = Math.random().toString(36).slice(2, 10);
 
-var $=function(i){return document.getElementById(i)};
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function load(){
-  try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}
-  var d=DISH_IDS.map(function(num){
-    return {id: num, name: DISH_NAME_MAP[num] || ''};
+var $ = function(i) { return document.getElementById(i); };
+
+function checkClientLock() {
+  return localStorage.getItem('r3_token_locked') === 'true' ||
+         sessionStorage.getItem('r3_token_locked') === 'true' ||
+         document.cookie.indexOf('r3_token_locked=true') !== -1;
+}
+
+function engageClientLock() {
+  localStorage.setItem('r3_token_locked', 'true');
+  sessionStorage.setItem('r3_token_locked', 'true');
+  document.cookie = "r3_token_locked=true; max-age=604800; path=/; SameSite=Lax";
+}
+
+function load() {
+  try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return { judge: '', token: '', ranks: {}, submitted: false };
+}
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+function getNextAvailableRank() {
+  var assigned = Object.values(S.ranks);
+  for (var r = 1; r <= DISH_IDS.length; r++) {
+    if (assigned.indexOf(r) === -1) return r;
+  }
+  return null;
+}
+
+function render() {
+  if (checkClientLock() || S.submitted) {
+    showThanksScreen();
+    return;
+  }
+
+  $('vote-view').classList.remove('hide');
+  $('thanks-view').classList.add('hide');
+
+  $('judge').value = S.judge || '';
+  $('token').value = S.token || '';
+
+  var h = '';
+  DISH_IDS.forEach(function(id) {
+    var r = S.ranks[id];
+    var isRanked = r !== undefined;
+    h += '<div class="item' + (isRanked ? ' ranked' : '') + '">';
+    h += '  <div class="dish-info">';
+    h += '    <div class="dish-title">Dish ' + id + '</div>';
+    if (DISH_NAMES[id]) h += '    <div class="dish-name">' + DISH_NAMES[id] + '</div>';
+    h += '  </div>';
+    h += '  <button class="rank-badge" data-id="' + id + '">';
+    h += isRanked ? 'Rank #' + r : 'Tap to rank';
+    h += '  </button>';
+    h += '</div>';
   });
-  return{judge:'',dishes:d,ratings:{}};
-}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
-function total(r){return CRITERIA.reduce(function(a,c){return a+(r.scores[c]||0)},0)}
-function maxOf(c){return YESNO[c]?1:MAX}
-function maxTotal(){return CRITERIA.reduce(function(a,c){return a+maxOf(c)},0)}
-function label(d){return 'Dish '+d.id+(d.name?' · '+d.name:'')}
+  $('list').innerHTML = h;
 
-function renderHome(){
-  var done=S.dishes.filter(function(d){return S.ratings[d.id]}).length;
-  $('cnt').textContent=done;$('tot').textContent=S.dishes.length;
-  var left=S.dishes.length-done;
-  $('left').textContent=left?left+' still to taste':'All rated';
-  $('fill').style.width=(S.dishes.length?done/S.dishes.length*100:0)+'%';
-  $('judge').value=S.judge||'';
-  var h='';
-  S.dishes.forEach(function(d){
-    var r=S.ratings[d.id];
-    h+='<button class="dish'+(r?' done':'')+'" data-id="'+d.id+'"><span><span class="n">Dish '+d.id+'</span><br><span class="nm">'+esc(d.name||'')+'</span></span><span class="st">'+(r?'Rated · '+total(r)+'/'+maxTotal():'Not rated yet')+'</span></button>';
+  var totalRanked = Object.keys(S.ranks).length;
+  var hasName = (S.judge || '').trim().length > 0;
+  var hasToken = (S.token || '').trim().length === 4;
+  var allRanked = totalRanked === DISH_IDS.length;
+
+  $('submit').disabled = !(allRanked && hasName && hasToken && !sending);
+
+  if (!hasName) {
+    $('status').textContent = 'Enter your name above.';
+  } else if (!hasToken) {
+    $('status').textContent = 'Enter your 4-digit voting token.';
+  } else if (!allRanked) {
+    var next = getNextAvailableRank();
+    $('status').textContent = 'Next tap will assign: Rank #' + next + ' (' + (DISH_IDS.length - totalRanked) + ' left)';
+  } else {
+    $('status').textContent = 'All dishes ranked! Ready to submit.';
+  }
+}
+
+function showThanksScreen() {
+  $('vote-view').classList.add('hide');
+  $('thanks-view').classList.remove('hide');
+  $('thanks-judge').textContent = S.judge ? ('Judge: ' + S.judge + (S.token ? ' (Token: ' + S.token + ')' : '')) : '';
+
+  history.pushState(null, '', location.href);
+  window.onpopstate = function() {
+    history.pushState(null, '', location.href);
+  };
+
+  var sorted = DISH_IDS.slice().sort(function(a, b) {
+    return (S.ranks[a] || 99) - (S.ranks[b] || 99);
   });
-  $('grid').innerHTML=h;
-  var rated=S.dishes.filter(function(d){return S.ratings[d.id]}).sort(function(a,b){return total(S.ratings[b.id])-total(S.ratings[a.id])});
-  if(!rated.length){$('results').innerHTML='';updateSync();return}
-  var t='<h2>My scores so far</h2><div class="scroll"><table><tr><th>Dish</th>'+CRITERIA.map(function(c){return'<th>'+esc(c)+'</th>'}).join('')+'<th>Total</th></tr>';
-  rated.forEach(function(d){var r=S.ratings[d.id];t+='<tr><td>'+esc(label(d))+'</td>'+CRITERIA.map(function(c){return'<td>'+r.scores[c]+'</td>'}).join('')+'<td><b>'+total(r)+'</b></td></tr>'});
-  $('results').innerHTML=t+'</table></div>';updateSync();
-}
 
-function openDish(id){
-  cur=S.dishes.filter(function(d){return d.id==id})[0];
-  var r=S.ratings[id];
-  draft={scores:r?Object.assign({},r.scores):{},note:r?r.note:''};
-  $('rtitle').textContent=label(cur);
-  $('note').value=draft.note;
-  $('home').classList.add('hide');$('rate').classList.remove('hide');
-  renderCrits();window.scrollTo(0,0);
-}
-function renderCrits(){
-  var h='';
-  CRITERIA.forEach(function(c,ci){
-    var v=draft.scores[c],has=v!==undefined;
-    h+='<div class="crit"><div>'+esc(c)+' <span class="sub" style="margin:0 0 0 8px">'+(has?v+' / '+maxOf(c):'not scored')+'</span></div>'+(CRIT_HELP[c]?'<div class="sub" style="margin:0 0 8px;font-weight:400">'+esc(CRIT_HELP[c])+'</div>':'');
-    if(YESNO[c]){
-      h+='<div class="yn"><button data-c="'+ci+'" data-v="0" class="'+(v===0?'on':'')+'">No bonus</button><button data-c="'+ci+'" data-v="1" class="'+(v===1?'on':'')+'">Yes, +1 point</button></div>';
-    }else{
-      h+='<div class="scale">';
-      for(var n=1;n<=MAX;n++)h+='<button data-c="'+ci+'" data-v="'+n+'" class="'+((v||0)>=n?'on':'')+'" aria-label="'+esc(c)+': '+n+' of '+MAX+' stars">'+((v||0)>=n?'\u2605':'\u2606')+'</button>';
-      h+='</div>';
+  var summaryHtml = '';
+  sorted.forEach(function(id) {
+    var r = S.ranks[id];
+    if (r) {
+      summaryHtml += '<div class="summary-row">';
+      summaryHtml += '  <span><b>#' + r + '</b> &mdash; Dish ' + id + (DISH_NAMES[id] ? ' (' + DISH_NAMES[id] + ')' : '') + '</span>';
+      summaryHtml += '</div>';
     }
-    h+='</div>';
   });
-  $('crits').innerHTML=h;
-  var scored=CRITERIA.every(function(c){return draft.scores[c]!==undefined});
-  var named=(S.judge||'').trim().length>0;
-  $('save').disabled=!(scored&&named);
-  $('rtotal').textContent=!named?'Enter your name on the main page first':scored?'Total '+total(draft)+' / '+maxTotal():'Score every category to save';
+  $('thanks-summary').innerHTML = summaryHtml;
+  window.scrollTo(0, 0);
 }
-function goHome(){cur=null;$('rate').classList.add('hide');$('home').classList.remove('hide');renderHome()}
 
-$('grid').addEventListener('click',function(e){
-  var b=e.target.closest('button');if(!b)return;
-  openDish(b.dataset.id);
+$('list').addEventListener('click', function(e) {
+  var btn = e.target.closest('button');
+  if (!btn) return;
+  var id = +btn.dataset.id;
+
+  if (S.ranks[id] !== undefined) {
+    var removedRank = S.ranks[id];
+    delete S.ranks[id];
+    Object.keys(S.ranks).forEach(function(k) {
+      if (S.ranks[k] > removedRank) S.ranks[k]--;
+    });
+  } else {
+    var next = getNextAvailableRank();
+    if (next) S.ranks[id] = next;
+  }
+
+  save();
+  render();
 });
-$('crits').addEventListener('click',function(e){
-  var b=e.target.closest('button');if(!b)return;
-  draft.scores[CRITERIA[b.dataset.c]]=+b.dataset.v;renderCrits();
+
+$('judge').addEventListener('input', function() {
+  S.judge = this.value;
+  save();
+  render();
 });
-$('judge').addEventListener('input',function(){S.judge=this.value;save()});
-$('judge').addEventListener('change',function(){
-  if(!S.judge.trim())return;
-  Object.keys(S.ratings).forEach(queue);save();flush();
+
+$('token').addEventListener('input', function() {
+  S.token = this.value.replace(/\D/g, '').slice(0, 4);
+  this.value = S.token;
+  save();
+  render();
 });
-$('back').onclick=goHome;
-$('save').onclick=function(){
-  S.ratings[cur.id]={scores:draft.scores,note:$('note').value};
-  queue(cur.id);
-  save();goHome();flush();
-};
-$('reset').onclick=function(){
-  if(!armed.reset){armed.reset=1;this.textContent='Tap again to clear every score';return}
-  armed.reset=0;this.textContent='Clear all my scores';S.ratings={};save();renderHome();
-};
-// ---- Sending scores to the organizer's Google Sheet ----
-function queue(id){
-  var d=S.dishes.filter(function(x){return x.id==id})[0],r=S.ratings[id];
-  if(!d||!r||!S.judge.trim())return;
-  S.pending[id]={jid:S.jid,judge:S.judge.trim(),dish:d.id,dishName:d.name,criteria:CRITERIA,scores:r.scores,total:total(r),note:r.note,at:new Date().toISOString()};
-}
-function updateSync(){
-  var el=$('sync');if(!el)return;
-  if(!SUBMIT_URL){el.textContent='';return}
-  var n=Object.keys(S.pending).length;
-  el.textContent=n?n+' score'+(n>1?'s':'')+' waiting to send. Keep this page open with a connection.':'All your scores have been sent.';
-}
-function flush(){
-  var ids=Object.keys(S.pending);
-  if(!SUBMIT_URL||!ids.length||sending){updateSync();return}
-  sending=true;
-  var id=ids[0],p=S.pending[id];
-  fetch(SUBMIT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)})
-    .then(function(){if(S.pending[id]===p)delete S.pending[id];save();sending=false;flush()})
-    .catch(function(){sending=false;updateSync()});
-  updateSync();
-}
-window.addEventListener('online',flush);
-setInterval(flush,15000);
-Object.keys(S.ratings).forEach(function(id){if(!S.pending[id]&&!S.sentOnce)queue(id)});
-S.sentOnce=true;save();
-renderHome();flush();
+
+$('submit').addEventListener('click', function() {
+  if (sending) return;
+  sending = true;
+  $('submit').disabled = true;
+  $('status').textContent = 'Submitting ballot...';
+
+  var rankedList = DISH_IDS.map(function(id) {
+    return {
+      dish: id,
+      dishName: DISH_NAMES[id] || '',
+      rank: S.ranks[id]
+    };
+  });
+
+  var payload = {
+    jid: S.jid,
+    judge: S.judge.trim(),
+    token: S.token.trim(),
+    at: new Date().toISOString(),
+    ranks: rankedList
+  };
+
+  fetch(SUBMIT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  })
+  .then(function() {
+    S.submitted = true;
+    engageClientLock();
+    save();
+    sending = false;
+    showThanksScreen();
+  })
+  .catch(function() {
+    sending = false;
+    $('status').textContent = 'Connection error. Please try tapping Submit again.';
+    render();
+  });
+});
+
+render();
 </script>
 </body>
 </html>
