@@ -6,10 +6,10 @@
 <title>Cook-off judge ranking - Round 3</title>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f3f5f1;--card:#fff;--ink:#16302b;--mut:#5d716c;--line:#d5ddd8;--acc:#e0930c;--accInk:#1d1400;--ok:#2b7a57;--okBg:#dff1e7;
+:root{--bg:#f3f5f1;--card:#fff;--ink:#16302b;--mut:#5d716c;--line:#d5ddd8;--acc:#e0930c;--accInk:#1d1400;--ok:#2b7a57;--okBg:#dff1e7;--err:#b3261e;--errBg:#f9dedc;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034}}
-:root[data-theme="dark"]{--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034;--err:#f2b8b5;--errBg:#601410}}
+:root[data-theme="dark"]{--bg:#0f1c19;--card:#182a26;--ink:#eaf1ee;--mut:#9bb0aa;--line:#2b423d;--acc:#f0a824;--ok:#5cc596;--okBg:#1d4034;--err:#f2b8b5;--errBg:#601410}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,-apple-system,sans-serif;line-height:1.45}
 main{max-width:600px;margin:0 auto;padding:24px 16px 48px}
@@ -30,10 +30,11 @@ button{font:inherit;cursor:pointer}
 .item.ranked .rank-badge{background:var(--acc);border-color:var(--acc);color:var(--accInk);font-size:1.15rem;font-weight:800}
 .btn{width:100%;border:0;background:var(--acc);color:var(--accInk);font-weight:800;border-radius:12px;padding:15px;font-size:1.1rem}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.status{margin-top:14px;text-align:center;font-size:.92rem;color:var(--mut)}
+.status{margin-top:14px;text-align:center;font-size:.95rem;color:var(--mut);font-weight:600}
+.alert-box{display:none;background:var(--errBg);color:var(--err);border:1.5px solid var(--err);border-radius:12px;padding:12px 16px;margin:16px 0;font-weight:700;text-align:center}
 .hide{display:none}
 
-/* Locked Confirmation View */
+/* Confirmation View */
 .thanks-card{background:var(--card);border:2px solid var(--ok);border-radius:20px;padding:36px 20px;text-align:center;margin-top:20px}
 .icon{font-size:3.5rem;line-height:1;margin-bottom:12px}
 .summary-box{background:var(--bg);border-radius:12px;padding:14px;margin:20px 0;text-align:left}
@@ -47,6 +48,8 @@ button{font:inherit;cursor:pointer}
   <section id="vote-view">
     <h1>Round 3: Final ranking</h1>
     <p class="sub">Tap each dish button in your preferred order. First tap is <b>Rank #1 (Best)</b>, next is #2, etc. Tap any ranked dish again to remove or adjust it.</p>
+
+    <div id="alert" class="alert-box"></div>
 
     <div class="form-row">
       <div>
@@ -79,7 +82,7 @@ button{font:inherit;cursor:pointer}
 </main>
 
 <script>
-var KEY = 'cookoff-r3-token-v1';
+var KEY = 'cookoff-r3-token-v2';
 var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
 var DISH_IDS = [1, 2, 3, 4, 5];
@@ -108,6 +111,19 @@ function load() {
 }
 
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+function showAlert(msg) {
+  var el = $('alert');
+  el.textContent = msg;
+  el.style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function clearAlert() {
+  var el = $('alert');
+  el.textContent = '';
+  el.style.display = 'none';
+}
 
 function getNextAvailableRank() {
   var assigned = Object.values(S.ranks);
@@ -218,6 +234,7 @@ $('judge').addEventListener('input', function() {
 });
 
 $('token').addEventListener('input', function() {
+  clearAlert();
   S.token = this.value.replace(/\D/g, '').slice(0, 4);
   this.value = S.token;
   save();
@@ -226,9 +243,10 @@ $('token').addEventListener('input', function() {
 
 $('submit').addEventListener('click', function() {
   if (sending) return;
+  clearAlert();
   sending = true;
   $('submit').disabled = true;
-  $('status').textContent = 'Submitting ballot...';
+  $('status').textContent = 'Verifying token & submitting...';
 
   var rankedList = DISH_IDS.map(function(id) {
     return {
@@ -248,20 +266,30 @@ $('submit').addEventListener('click', function() {
 
   fetch(SUBMIT_URL, {
     method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(payload)
   })
-  .then(function() {
-    S.submitted = true;
-    engageClientLock();
-    save();
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
     sending = false;
-    showThanksScreen();
+    if (data.status === 'TOKEN_ALREADY_USED') {
+      showAlert('⚠️ Token ' + S.token + ' has already been used to vote! Please check your slip.');
+      render();
+    } else if (data.status === 'INVALID_TOKEN') {
+      showAlert('⚠️ Token ' + S.token + ' is not a valid voting token. Please double check your number.');
+      render();
+    } else if (data.status === 'OK') {
+      S.submitted = true;
+      engageClientLock();
+      save();
+      showThanksScreen();
+    } else {
+      showAlert('Unexpected response from server. Please try again.');
+      render();
+    }
   })
-  .catch(function() {
+  .catch(function(err) {
     sending = false;
-    $('status').textContent = 'Connection error. Please try tapping Submit again.';
+    showAlert('Network error submitting vote. Please check your Wi-Fi/connection and tap Submit again.');
     render();
   });
 });
