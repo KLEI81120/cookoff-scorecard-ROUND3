@@ -82,7 +82,7 @@ button{font:inherit;cursor:pointer}
 </main>
 
 <script>
-var KEY = 'cookoff-r3-token-v2';
+var KEY = 'cookoff-r3-token-v3';
 var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
 var DISH_IDS = [1, 2, 3, 4, 5];
@@ -241,6 +241,30 @@ $('token').addEventListener('input', function() {
   render();
 });
 
+// Global callback for JSONP
+window.onVoteResponse = function(data) {
+  sending = false;
+  // Remove temporary script tag
+  var oldScript = document.getElementById('jsonp-sub');
+  if (oldScript) oldScript.remove();
+
+  if (data.status === 'TOKEN_ALREADY_USED') {
+    showAlert('⚠️ Token ' + S.token + ' has already been used to vote! Please check your slip.');
+    render();
+  } else if (data.status === 'INVALID_TOKEN') {
+    showAlert('⚠️ Token ' + S.token + ' is not a valid voting token. Please double check your number.');
+    render();
+  } else if (data.status === 'OK') {
+    S.submitted = true;
+    engageClientLock();
+    save();
+    showThanksScreen();
+  } else {
+    showAlert('Unexpected response from server. Please try again.');
+    render();
+  }
+};
+
 $('submit').addEventListener('click', function() {
   if (sending) return;
   clearAlert();
@@ -264,34 +288,17 @@ $('submit').addEventListener('click', function() {
     ranks: rankedList
   };
 
-  fetch(SUBMIT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
+  // Submit via JSONP Script Injection to avoid CORS redirection blocks
+  var scriptUrl = SUBMIT_URL + '?callback=onVoteResponse&data=' + encodeURIComponent(JSON.stringify(payload));
+  var script = document.createElement('script');
+  script.id = 'jsonp-sub';
+  script.src = scriptUrl;
+  script.onerror = function() {
     sending = false;
-    if (data.status === 'TOKEN_ALREADY_USED') {
-      showAlert('⚠️ Token ' + S.token + ' has already been used to vote! Please check your slip.');
-      render();
-    } else if (data.status === 'INVALID_TOKEN') {
-      showAlert('⚠️ Token ' + S.token + ' is not a valid voting token. Please double check your number.');
-      render();
-    } else if (data.status === 'OK') {
-      S.submitted = true;
-      engageClientLock();
-      save();
-      showThanksScreen();
-    } else {
-      showAlert('Unexpected response from server. Please try again.');
-      render();
-    }
-  })
-  .catch(function(err) {
-    sending = false;
-    showAlert('Network error submitting vote. Please check your Wi-Fi/connection and tap Submit again.');
+    showAlert('Network error submitting vote. Please check your connection and tap Submit again.');
     render();
-  });
+  };
+  document.body.appendChild(script);
 });
 
 render();
