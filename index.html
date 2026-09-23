@@ -87,24 +87,30 @@ var CRIT_HELP={
   'Overall Presentation':'Does it look as good as it tastes?',
   'Bonus Point':'One point will be awarded for contestants who incorporate Mid-Autumn elements (lanterns, jade rabbits, and moon motifs) in their dish.'
 };
-var MAX=5, KEY='cookoff-v7';
-// Paste your Google Apps Script web app URL between the quotes to send scores to your Google Sheet.
+var MAX=5, KEY='cookoff-v8';
+// Google Apps Script web app URL to send scores to your Google Sheet.
 var SUBMIT_URL='https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
-// Organizer only: judges cannot add or rename dishes. To add dishes, raise DISH_COUNT and re-upload this file.
-var DISH_COUNT=5;
-// Optional names, in order (Dish 1, Dish 2, ...). Leave as [] to show numbers only, e.g. ['Chili','Gumbo'].
-var DISH_NAMES=[];
+
+// Custom dish numbers: 1, 5, 7, 9, 10
+var DISH_IDS=[1, 5, 7, 9, 10];
+// Optional names mapping by dish ID, e.g. {1: 'Spicy Noodle', 5: 'Sesame Noodle'}
+var DISH_NAME_MAP={};
+
 var S=load(), cur=null, draft=null, armed={}, sending=false;
 S.pending=S.pending||{};
 if(!S.jid)S.jid=Math.random().toString(36).slice(2,10);
-S.dishes=[];
-for(var i=1;i<=DISH_COUNT;i++)S.dishes.push({id:i,name:DISH_NAMES[i-1]||''});
+S.dishes=DISH_IDS.map(function(num){
+  return {id: num, name: DISH_NAME_MAP[num] || ''};
+});
+
 var $=function(i){return document.getElementById(i)};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function load(){
   try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}
-  var d=[];for(var i=1;i<=DISH_COUNT;i++)d.push({id:i,name:''});
-  return{judge:'',next:DISH_COUNT+1,dishes:d,ratings:{}};
+  var d=DISH_IDS.map(function(num){
+    return {id: num, name: DISH_NAME_MAP[num] || ''};
+  });
+  return{judge:'',dishes:d,ratings:{}};
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function total(r){return CRITERIA.reduce(function(a,c){return a+(r.scores[c]||0)},0)}
