@@ -82,10 +82,10 @@ button{font:inherit;cursor:pointer}
 </main>
 
 <script>
-var KEY = 'cookoff-r3-token-v3';
+var KEY = 'cookoff-r3-token-v4';
 var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
-var DISH_IDS = [1, 2, 3, 4, 5];
+var DISH_IDS = [3, 9, 10, 20, 21];
 var DISH_NAMES = {};
 
 var S = load(), sending = false;
@@ -244,7 +244,6 @@ $('token').addEventListener('input', function() {
 // Global callback for JSONP
 window.onVoteResponse = function(data) {
   sending = false;
-  // Remove temporary script tag
   var oldScript = document.getElementById('jsonp-sub');
   if (oldScript) oldScript.remove();
 
