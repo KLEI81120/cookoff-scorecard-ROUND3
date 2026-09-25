@@ -19,8 +19,7 @@ label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:4px}
 input{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:16px}
 input:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
 button{font:inherit;cursor:pointer}
-.form-row{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
-@media (max-width:480px){.form-row{grid-template-columns:1fr}}
+.token-wrap{margin-bottom:8px}
 .list{display:flex;flex-direction:column;gap:12px;margin:16px 0 24px}
 .item{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s,background .2s}
 .item.ranked{border-color:var(--ok);background:var(--okBg)}
@@ -51,15 +50,9 @@ button{font:inherit;cursor:pointer}
 
     <div id="alert" class="alert-box"></div>
 
-    <div class="form-row">
-      <div>
-        <label for="judge">Your name</label>
-        <input id="judge" placeholder="Your name" autocomplete="name">
-      </div>
-      <div>
-        <label for="token">4-digit token</label>
-        <input id="token" type="tel" maxlength="4" placeholder="e.g. 1029" autocomplete="off">
-      </div>
+    <div class="token-wrap">
+      <label for="token">4-digit voting token</label>
+      <input id="token" type="tel" maxlength="4" placeholder="Enter your 4-digit token (e.g. 1029)" autocomplete="off">
     </div>
 
     <div class="list" id="list"></div>
@@ -74,7 +67,7 @@ button{font:inherit;cursor:pointer}
       <div class="icon">&#10004;&#65039;</div>
       <h1 style="font-size:2.2rem;margin-bottom:4px">Thanks!</h1>
       <p class="sub" style="font-size:1.05rem">Your vote has been submitted and verified.</p>
-      <p style="font-weight:700" id="thanks-judge"></p>
+      <p style="font-weight:700" id="thanks-token"></p>
       <div class="summary-box" id="thanks-summary"></div>
       <p class="sub" style="font-size:.85rem;margin-top:24px">Only 1 ballot per token. Enjoy the rest of the cook-off!</p>
     </div>
@@ -82,7 +75,7 @@ button{font:inherit;cursor:pointer}
 </main>
 
 <script>
-var KEY = 'cookoff-r3-token-v4';
+var KEY = 'cookoff-r3-token-v5';
 var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzukXZL0Mc6I15FEn9aoZkhJHDsMVDDH4vl21RwGP9NCiSTQc0BRt6SoZ1FzAoK4gXi/exec';
 
 var DISH_IDS = [3, 9, 10, 20, 21];
@@ -107,7 +100,7 @@ function engageClientLock() {
 
 function load() {
   try { var r = localStorage.getItem(KEY); if (r) return JSON.parse(r); } catch(e) {}
-  return { judge: '', token: '', ranks: {}, submitted: false };
+  return { token: '', ranks: {}, submitted: false };
 }
 
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
@@ -142,7 +135,6 @@ function render() {
   $('vote-view').classList.remove('hide');
   $('thanks-view').classList.add('hide');
 
-  $('judge').value = S.judge || '';
   $('token').value = S.token || '';
 
   var h = '';
@@ -162,16 +154,13 @@ function render() {
   $('list').innerHTML = h;
 
   var totalRanked = Object.keys(S.ranks).length;
-  var hasName = (S.judge || '').trim().length > 0;
   var hasToken = (S.token || '').trim().length === 4;
   var allRanked = totalRanked === DISH_IDS.length;
 
-  $('submit').disabled = !(allRanked && hasName && hasToken && !sending);
+  $('submit').disabled = !(allRanked && hasToken && !sending);
 
-  if (!hasName) {
-    $('status').textContent = 'Enter your name above.';
-  } else if (!hasToken) {
-    $('status').textContent = 'Enter your 4-digit voting token.';
+  if (!hasToken) {
+    $('status').textContent = 'Enter your 4-digit voting token above.';
   } else if (!allRanked) {
     var next = getNextAvailableRank();
     $('status').textContent = 'Next tap will assign: Rank #' + next + ' (' + (DISH_IDS.length - totalRanked) + ' left)';
@@ -183,7 +172,7 @@ function render() {
 function showThanksScreen() {
   $('vote-view').classList.add('hide');
   $('thanks-view').classList.remove('hide');
-  $('thanks-judge').textContent = S.judge ? ('Judge: ' + S.judge + (S.token ? ' (Token: ' + S.token + ')' : '')) : '';
+  $('thanks-token').textContent = S.token ? ('Voting Token: ' + S.token) : '';
 
   history.pushState(null, '', location.href);
   window.onpopstate = function() {
@@ -223,12 +212,6 @@ $('list').addEventListener('click', function(e) {
     if (next) S.ranks[id] = next;
   }
 
-  save();
-  render();
-});
-
-$('judge').addEventListener('input', function() {
-  S.judge = this.value;
   save();
   render();
 });
@@ -281,7 +264,7 @@ $('submit').addEventListener('click', function() {
 
   var payload = {
     jid: S.jid,
-    judge: S.judge.trim(),
+    judge: 'Token ' + S.token.trim(),
     token: S.token.trim(),
     at: new Date().toISOString(),
     ranks: rankedList
